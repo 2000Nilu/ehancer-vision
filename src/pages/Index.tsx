@@ -4,6 +4,7 @@ import EnhancementControls from "@/components/EnhancementControls";
 import ImagePreview from "@/components/ImagePreview";
 import ImageUploader from "@/components/ImageUploader";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import Logo from "@/components/Logo";
 import { constructImageUrl, getDefaultImages } from "@/utils/imageProcessing";
 
 const Index = () => {
@@ -35,12 +36,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background p-8">
-      <ThemeToggle />
+      <div className="flex justify-between items-center mb-8">
+        <Logo />
+        <ThemeToggle />
+      </div>
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold mb-8 text-foreground">
-          Image Enhancer Suite
-        </h1>
-        
         <ImageUploader
           onImageUpload={setCustomImage}
           customImage={customImage}

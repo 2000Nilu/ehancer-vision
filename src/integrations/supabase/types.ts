@@ -9,7 +9,68 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      enhanced_images: {
+        Row: {
+          created_at: string
+          enhanced_image_url: string
+          id: string
+          original_image_url: string
+          processing_status:
+            | Database["public"]["Enums"]["processing_status_enum"]
+            | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          enhanced_image_url: string
+          id?: string
+          original_image_url: string
+          processing_status?:
+            | Database["public"]["Enums"]["processing_status_enum"]
+            | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          enhanced_image_url?: string
+          id?: string
+          original_image_url?: string
+          processing_status?:
+            | Database["public"]["Enums"]["processing_status_enum"]
+            | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "enhanced_images_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          id: string
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          id: string
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +79,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      processing_status_enum: "pending" | "processing" | "completed" | "failed"
     }
     CompositeTypes: {
       [_ in never]: never
