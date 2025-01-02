@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import ImageTypeSelector from "@/components/ImageTypeSelector";
 import EnhancementControls from "@/components/EnhancementControls";
 import ImagePreview from "@/components/ImagePreview";
@@ -10,6 +10,8 @@ import { Wand2 } from "lucide-react";
 import { constructImageUrl, getDefaultImages } from "@/utils/imageProcessing";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { Auth } from '@supabase/auth-ui-react';
+import { ThemeSupa } from '@supabase/auth-ui-shared';
 
 const Index = () => {
   const [selectedType, setSelectedType] = useState("portrait");
@@ -17,7 +19,22 @@ const Index = () => {
   const [customImage, setCustomImage] = useState<string | null>(null);
   const [selectedModel, setSelectedModel] = useState("GFPGAN");
   const [isEnhancing, setIsEnhancing] = useState(false);
+  const [session, setSession] = useState(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleEnhancementToggle = useCallback((enhancementId: string) => {
     setActiveEnhancements((current) =>
@@ -53,24 +70,11 @@ const Index = () => {
   const handleImageEnhancement = async () => {
     try {
       setIsEnhancing(true);
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        toast({
-          title: "Authentication required",
-          description: "Please sign in to enhance images",
-          variant: "destructive",
-        });
-        return;
-      }
-
       const response = await supabase.functions.invoke("enhance-image", {
         body: {
           imageUrl: images.before,
           modelType: selectedModel,
-          userId: user.id,
+          userId: session?.user?.id,
         },
       });
 
@@ -120,11 +124,39 @@ const Index = () => {
     }
   };
 
+  if (!session) {
+    return (
+      <div className="min-h-screen bg-background p-8">
+        <div className="flex justify-between items-center mb-8">
+          <Logo />
+          <ThemeToggle />
+        </div>
+        <div className="max-w-md mx-auto mt-8 p-6 bg-card rounded-lg shadow-lg">
+          <h2 className="text-2xl font-bold text-center mb-6">Sign in to enhance your images</h2>
+          <Auth 
+            supabaseClient={supabase}
+            appearance={{ theme: ThemeSupa }}
+            providers={[]}
+            theme="light"
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background p-8">
       <div className="flex justify-between items-center mb-8">
         <Logo />
-        <ThemeToggle />
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="outline" 
+            onClick={() => supabase.auth.signOut()}
+          >
+            Sign Out
+          </Button>
+          <ThemeToggle />
+        </div>
       </div>
       <div className="max-w-4xl mx-auto">
         <ImageUploader
