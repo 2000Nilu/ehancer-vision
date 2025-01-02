@@ -46,6 +46,7 @@ serve(async (req) => {
     )
 
     const prediction = await response.json()
+    console.log('Prediction status:', prediction.status)
 
     if (prediction.status === 'succeeded') {
       // Update the enhancement record with the result
