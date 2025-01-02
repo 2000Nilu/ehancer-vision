@@ -1,5 +1,6 @@
 import { Switch } from "@/components/ui/switch";
 import { Info, RefreshCcw, Sun, Users, Users2 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface Enhancement {
   id: string;
@@ -38,14 +39,36 @@ const enhancements: Enhancement[] = [
 interface EnhancementControlsProps {
   activeEnhancements: string[];
   onToggle: (enhancementId: string) => void;
+  selectedModel: string;
+  onModelChange: (model: string) => void;
 }
 
 const EnhancementControls = ({
   activeEnhancements,
   onToggle,
+  selectedModel,
+  onModelChange,
 }: EnhancementControlsProps) => {
   return (
     <div className="space-y-4">
+      <div className="p-4 rounded-lg bg-card">
+        <h3 className="font-medium mb-2">AI Model Selection</h3>
+        <Select value={selectedModel} onValueChange={onModelChange}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select AI Model" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="GFPGAN">GFPGAN (Face Enhancement)</SelectItem>
+            <SelectItem value="ESRGAN">Real-ESRGAN (General Enhancement)</SelectItem>
+          </SelectContent>
+        </Select>
+        <p className="text-sm text-muted-foreground mt-2">
+          {selectedModel === 'GFPGAN' 
+            ? 'Specialized in facial restoration and enhancement'
+            : 'Best for general image super-resolution'}
+        </p>
+      </div>
+
       {enhancements.map((enhancement) => (
         <div
           key={enhancement.id}

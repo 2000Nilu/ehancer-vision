@@ -13,7 +13,9 @@ export type Database = {
         Row: {
           created_at: string
           enhanced_image_url: string
+          enhancement_parameters: Json | null
           id: string
+          model_used: string | null
           original_image_url: string
           processing_status:
             | Database["public"]["Enums"]["processing_status_enum"]
@@ -23,7 +25,9 @@ export type Database = {
         Insert: {
           created_at?: string
           enhanced_image_url: string
+          enhancement_parameters?: Json | null
           id?: string
+          model_used?: string | null
           original_image_url: string
           processing_status?:
             | Database["public"]["Enums"]["processing_status_enum"]
@@ -33,7 +37,9 @@ export type Database = {
         Update: {
           created_at?: string
           enhanced_image_url?: string
+          enhancement_parameters?: Json | null
           id?: string
+          model_used?: string | null
           original_image_url?: string
           processing_status?:
             | Database["public"]["Enums"]["processing_status_enum"]
